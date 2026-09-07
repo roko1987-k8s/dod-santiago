@@ -9,9 +9,9 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/TU-USUARIO/TU-REPO.git
+    repoURL: https://github.com/roko1987-k8s/dod-santiago.git
     targetRevision: main
-    path: microservices
+    path: app
     directory:
       recurse: true
 

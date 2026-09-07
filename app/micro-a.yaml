@@ -1,17 +1,47 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: micro-a
+  name: micro-a-v1
+  namespace: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: micro-a
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: micro-a
+        version: v1
+    spec:
+      serviceAccountName: micro-a
+      containers:
+      - name: micro-a
+        image: roko1987/micro-a
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8443
+        env:
+        - name: MICRO_B_URL
+          value: http://micro-b:8443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: micro-a-v2
   namespace: demo
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: micro-a
+      version: v2
   template:
     metadata:
       labels:
         app: micro-a
+        version: v2
     spec:
       serviceAccountName: micro-a
       containers:
