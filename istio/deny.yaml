@@ -1,0 +1,9 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-nothing-to-a
+  namespace: demo
+spec:
+  selector:
+    matchLabels:
+      app: micro-a

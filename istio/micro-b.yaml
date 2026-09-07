@@ -1,0 +1,15 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-b-to-c
+  namespace: demo
+spec:
+  selector:
+    matchLabels:
+      app: micro-c
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/demo/sa/micro-b

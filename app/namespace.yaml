@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: micro-a
+  namespace: demo
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: micro-b
+  namespace: demo
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: micro-c
+  namespace: demo

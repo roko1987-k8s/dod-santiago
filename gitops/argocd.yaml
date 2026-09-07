@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: microservices
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/TU-USUARIO/TU-REPO.git
+    targetRevision: main
+    path: microservices
+    directory:
+      recurse: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
