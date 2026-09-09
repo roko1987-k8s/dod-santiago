@@ -22,13 +22,16 @@ public class Application {
 
     @GetMapping("/")
     public String home() {
+        String version = System.getenv().getOrDefault("VERSION", "unknown");
+    
         return """
                 {
                   "service": "micro-a",
                   "language": "Java",
-                  "framework": "Spring Boot"
+                  "framework": "Spring Boot",
+                  "version": "%s"
                 }
-                """;
+                """.formatted(version);
     }
 
     @GetMapping("/health")
