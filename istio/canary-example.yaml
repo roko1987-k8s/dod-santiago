@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canary-micro-a-v1
+  namespace: demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: micro-a
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: micro-a
+        version: v1
+    spec:
+      serviceAccountName: micro-a
+      containers:
+      - name: micro-a
+        image: roko1987/micro-a:java
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8443
+        env:
+        - name: MICRO_B_URL
+          value: http://micro-b:8443
+        - name: VERSION
+          value: "v1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canary-micro-a-v2
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: micro-a
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: micro-a
+        version: v2
+    spec:
+      serviceAccountName: micro-a
+      containers:
+      - name: micro-a
+        image: roko1987/micro-a:java
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8443
+        env:
+        - name: MICRO_B_URL
+          value: http://micro-b:8443
+        - name: VERSION
+          value: "v2"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: micro-a
+  namespace: demo
+spec:
+  hosts:
+  - micro-a
+  http:
+  # Tráfico dirigido explícitamente al Canary
+  - name: canary-release
+    match:
+    - headers:
+        x-canary:
+          exact: "true"
+    route:
+    - destination:
+        host: micro-a
+        subset: canary
+  # Tráfico normal: 95% stable / 5% canary
+  - name: production
+    route:
+    - destination:
+        host: micro-a
+        subset: stable
+      weight: 95
+    - destination:
+        host: micro-a
+        subset: canary
+      weight: 5
+---
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: micro-a
+  namespace: demo
+spec:
+  host: micro-a
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 20
+        maxRequestsPerConnection: 10
+    outlierDetection:
+      consecutive5xxErrors: 3
+      interval: 5s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+  subsets:
+  - name: stable
+    labels:
+      version: v1
+  - name: canary
+    labels:
+      version: v2
