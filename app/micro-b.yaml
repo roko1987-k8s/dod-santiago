@@ -16,7 +16,7 @@ spec:
       serviceAccountName: micro-b
       containers:
       - name: micro-b
-        image: roko1987/micro-b
+        image: roko1987/micro-b:java
         imagePullPolicy: Always
         ports:
         - containerPort: 8443

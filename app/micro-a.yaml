@@ -16,7 +16,7 @@ spec:
       serviceAccountName: micro-a
       containers:
       - name: micro-a
-        image: roko1987/micro-a
+        image: roko1987/micro-a:java
         imagePullPolicy: Always
         ports:
         - containerPort: 8443
